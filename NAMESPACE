@@ -1,0 +1,6 @@
+useDynLib(tc.ergmterms)
+
+import(statnet.common,network,ergm)
+
+# Export all names
+exportPattern(".")
