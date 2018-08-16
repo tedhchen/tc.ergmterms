@@ -1,11 +1,7 @@
-/*  File src/changestats.users.h in package ergm.userterms, part of the Statnet suite
- *  of packages for network analysis, http://statnet.org .
+/*  File src/changestats.users.h in package tc.ergmterms.
  *
- *  This software is distributed under the GPL-3 license.  It is free,
- *  open source, and has the attribution requirements (GPL Section 7) at
- *  http://statnet.org/attribution
- *
- *  Copyright 2003-2013 Statnet Commons
+ *  This software is distributed under the GPL-3 license.  It is free
+ *  and open source.
  */
 #ifndef CHANGESTATS_H
 #define CHANGESTATS_H
@@ -21,5 +17,6 @@ CHANGESTAT_FN(d_duplexdyad);
 CHANGESTAT_FN(d_gwtdsp);
 CHANGESTAT_FN(d_gwtesp);
 CHANGESTAT_FN(d_wttriple);
+CHANGESTAT_FN(d_wttriple2);
 
 #endif
