@@ -8,7 +8,7 @@ InitErgmTerm.wttriple<-function (nw, arglist, ...) {
                       defaultvalues = list(1),
                       required = c(FALSE))
   alpha <- a$alpha
-  tn <- summary.formula(nw~ttriple)
+  tn <- summary_formula(nw~ttriple)
   coef.names <- "wttriple"
   inputs <- c(alpha, tn)
   list(name="wttriple", 
@@ -27,7 +27,7 @@ InitErgmTerm.wttriple2<-function (nw, arglist, ...) {
   attrname <- a$attrname
   diff <- a$diff
   alpha <- a$alpha
-  tn <- summary.formula(nw~ttriple)
+  tn <- summary_formula(nw~ttriple)
   if(!is.null(attrname)) {
     nodecov <- get.node.attr(nw, attrname, "wttriple2")
     u <- NVL(a$levels, sort(unique(nodecov)))
