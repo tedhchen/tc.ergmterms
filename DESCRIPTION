@@ -4,7 +4,7 @@ Date: 2018-08-11
 Title: Ted Hsuan Yun Chen's Custom ERGM Terms
 Authors@R: c(person("Ted Hsuan Yun", "Chen", role=c("aut", "cre"), email="ted.hsuanyun.chen@gmail.com"))
 LinkingTo: ergm
-Depends: network (>= 1.7-1), ergm (>= 3.8-0), statnet.common (>= 3.1-0)
+Depends: network (>= 1.13-0), ergm (>= 3.9-4), statnet.common (>= 4.1-4)
 Description: Custom ERGM terms written in the ergm.userterms framework, for use with the ergm package.
 License: GPL-3 + file LICENSE
 Author: Ted Hsuan Yun Chen [aut, cre]
