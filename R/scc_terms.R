@@ -49,3 +49,35 @@ InitErgmTerm.wttriple2<-function (nw, arglist, ...) {
   }
   list(name="wttriple2", coef.names=coef.names, inputs=inputs, minval = 0, pkgname = "tc.ergmterms")
 }
+
+InitErgmTerm.difftransties<-function (nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("attrname", "diff", "levels"),
+                      vartypes = c("character", "logical", "character,numeric,logical"),
+                      defaultvalues = list(NULL, FALSE, NULL),
+                      required = c(FALSE, FALSE, FALSE))
+  if (a$diff) stop("diff=TRUE is not currently implemented in difftransties")
+  attrname <- a$attrname
+  diff <- a$diff
+  if(!is.null(attrname)) {
+    nodecov <- get.node.attr(nw, attrname, "difftransties")
+    u<-sort(unique(nodecov))
+    if(any(is.na(nodecov))){u<-c(u,NA)}
+    nodecov <- match(nodecov,u,nomatch=length(u)+1)
+    ui <- seq(along=u)
+    if (length(u)==1)
+      warning ("Attribute given to difftransties() has only one value", call.=FALSE)
+    if (!diff) {
+      coef.names <- paste("difftransties",attrname,sep=".")
+      inputs <- c(nodecov)
+    } else {
+      coef.names <- paste("difftransties",attrname, u, sep=".")
+      inputs <- c(ui, nodecov)
+      attr(inputs, "ParamsBeforeCov") <- length(ui)
+    }
+  }else{
+    coef.names <- "difftransties"
+    inputs <- NULL
+  }
+  list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
+}
