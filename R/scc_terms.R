@@ -6,11 +6,10 @@ InitErgmTerm.wttriple<-function (nw, arglist, ...) {
                       varnames = c("alpha"),
                       vartypes = c("numeric"),
                       defaultvalues = list(1),
-                      required = c(FALSE))
+                      required = c(TRUE))
   alpha <- a$alpha
-  tn <- summary_formula(nw~ttriple)
   coef.names <- "wttriple"
-  inputs <- c(alpha, tn)
+  inputs <- c(alpha)
   list(name="wttriple", 
        coef.names=coef.names, 
        inputs=inputs, 
