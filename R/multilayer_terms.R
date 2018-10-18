@@ -3,6 +3,139 @@
 
 # Section 1) Terms for within-layer dependence.
 
+# 1.1) Edgecov within layer.
+InitErgmTerm.edgecov_layer <- function(nw, arglist, ...) {
+  ### Check the network and arguments to make sure they are appropriate.
+  a <- check.ErgmTerm(nw, arglist, 
+                      varnames = c("x", "attrname", "layer"),
+                      vartypes = c("matrix,network,character", "character", "numeric"),
+                      defaultvalues = list(NULL, NULL, NULL),
+                      required = c(TRUE, FALSE, TRUE))
+  ### Process the arguments
+  layer.mem <- get.node.attr(nw, "layer.mem")
+  layer <- a$layer
+  in.layer <- which(layer.mem == layer)
+  layer.size <- length(in.layer)
+
+  if(is.character(a$x)){
+    if(a$x == "edges"){
+      xm <- matrix(1, ncol = layer.size, nrow = layer.size)
+    } else {
+      xm<-get.network.attribute(nw,a$x)
+      if(is.null(xm)){stop("There is no network attribute named ",a$x,call.=FALSE)}
+    }
+  } else {
+    if(is.network(a$x)){
+      xm<-as.matrix.network(a$x,matrix.type="adjacency",a$attrname)
+    } else {
+      xm<-as.matrix(a$x)
+    }
+  }
+  
+  # To multilayer 
+  xm.l <- matrix(0, ncol = network.size(nw), nrow = network.size(nw))
+  xm.l[in.layer,in.layer] <- xm
+  
+  ### Construct the list to return
+  if(!is.null(a$attrname)) {
+    # Note: the sys.call business grabs the name of the x object from the 
+    # user's call.  Not elegant, but it works as long as the user doesn't
+    # pass anything complicated.
+    cn<-paste("edgecov.layer.l", layer, as.character(a$attrname), sep = ".")
+  } else {
+    cn<-paste("edgecov.layer", layer, as.character(sys.call(0)[[3]][2]), sep = ".")
+  }
+  inputs <- c(NCOL(xm.l), as.double(xm.l))
+  attr(inputs, "ParamsBeforeCov") <- 1
+  list(name="edgecov", coef.names = cn, inputs = inputs, dependence=FALSE,
+       minval = sum(c(xm.l)[c(xm.l)<0]),
+       maxval = sum(c(xm.l)[c(xm.l)>0]),
+       pkgname = "ergm"
+  )
+}
+
+# 1.2) Nodeifactor within layer
+InitErgmTerm.nodeifactor_layer<-function (nw, arglist, ...) {
+  ### Check the network and arguments to make sure they are appropriate.
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
+                      varnames = c("attrname", "base", "levels", "layer"),
+                      vartypes = c("character", "numeric", "character,numeric,logical", "numeric"),
+                      defaultvalues = list(NULL, 1, NULL, NULL),
+                      required = c(TRUE, FALSE, FALSE, TRUE))
+  ### Process the arguments
+  
+  nodecov <-
+    if(length(a$attrname)==1)
+      get.node.attr(nw, a$attrname)
+  else{
+    do.call(paste,c(sapply(a$attrname,function(oneattr) get.node.attr(nw,oneattr),simplify=FALSE),sep="."))
+  }
+  
+  u <- NVL(a$levels, sort(unique(nodecov)))
+  if (any(NVL(a$base,0)!=0)) {
+    u <- u[-a$base]
+    if (length(u)==0) { # Get outta here!  (can happen if user passes attribute with one value)
+      return()
+    }
+  }
+  #   Recode to numeric
+  nodepos <- match(nodecov,u,nomatch=0)-1
+  
+  # Layers
+  layer <- a$layer
+  layer.mem <- get.node.attr(nw, "layer.mem")
+  
+  ### Construct the list to return
+  inputs <- nodepos
+  list(name="nodeifactor_layer", #required
+       coef.names = paste("nodeifactor_layer", layer, paste(a$attrname,collapse="."), u, sep="."), #required
+       inputs = c(inputs, layer, layer.mem),
+       dependence = FALSE, # So we don't use MCMC if not necessary
+       minval = 0
+  )
+}
+
+# 1.3) Nodeofactor within layer
+InitErgmTerm.nodeofactor_layer<-function (nw, arglist, ...) {
+  ### Check the network and arguments to make sure they are appropriate.
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
+                      varnames = c("attrname", "base", "levels", "layer"),
+                      vartypes = c("character", "numeric", "character,numeric,logical", "numeric"),
+                      defaultvalues = list(NULL, 1, NULL, NULL),
+                      required = c(TRUE, FALSE, FALSE, TRUE))
+  ### Process the arguments
+  nodecov <-
+    if(length(a$attrname)==1)
+      get.node.attr(nw, a$attrname)
+  else{
+    do.call(paste,c(sapply(a$attrname,function(oneattr) get.node.attr(nw,oneattr),simplify=FALSE),sep="."))
+  }
+  
+  u <- NVL(a$levels, sort(unique(nodecov)))
+  if (any(NVL(a$base,0)!=0)) {
+    u <- u[-a$base]
+    if (length(u)==0) { # Get outta here!  (can happen if user passes attribute with one value)
+      return()
+    }
+  }
+  #   Recode to numeric
+  nodepos <- match(nodecov,u,nomatch=0)-1
+  
+  # Layers
+  layer <- a$layer
+  layer.mem <- get.node.attr(nw, "layer.mem")
+  
+  ### Construct the list to return
+  inputs <- nodepos
+  list(name="nodeofactor_layer",  #required
+       coef.names = paste("nodeofactor_layer", layer, paste(a$attrname,collapse="."), u, sep="."), #required
+       inputs = c(inputs, layer, layer.mem),
+       dependence = FALSE, # So we don't use MCMC if not necessary
+       minval = 0
+  )
+}  
+
+
 # 1.1) GWDSP within layer.
 InitErgmTerm.gwdsp_layer<-function(nw, arglist, initialfit=FALSE, ...) {
   # the following line was commented out in <InitErgm.gwdsp>:  
@@ -44,7 +177,7 @@ InitErgmTerm.gwdsp_layer<-function(nw, arglist, initialfit=FALSE, ...) {
     if (initialfit && !fixed) # First pass to get MPLE coefficient
       coef.names <- "gwdsp"   # must match params$gwdsp above
     else  # fixed == TRUE
-      coef.names <- paste("gwdsp.layer.l",layer,".fixed.",decay,sep="")
+      coef.names <- paste("gwdsp.layer.",layer,".fixed.",decay,sep="")
     if(is.directed(nw)){dname <- "gwtdsp_layer"}else{dname <- "gwdsp"}
     list(name=dname, coef.names=coef.names, inputs=c(decay, layer, layer.mem), pkgname = "tc.ergmterms")
   }
@@ -92,7 +225,7 @@ InitErgmTerm.gwesp_layer<-function(nw, arglist, initialfit=FALSE, ...) {
     if (initialfit && !fixed)  # First pass to get MPLE coefficient
       coef.names <- "gwesp"
     else # fixed == TRUE
-      coef.names <- paste("gwesp.layer.l",layer,".fixed.",decay,sep="")
+      coef.names <- paste("gwesp.layer.",layer,".fixed.",decay,sep="")
     if(is.directed(nw)){dname <- "gwtesp_layer"}else{dname <- "gwesp"}
     list(name=dname, coef.names=coef.names, inputs=c(decay, layer, layer.mem), pkgname = "tc.ergmterms")
   }

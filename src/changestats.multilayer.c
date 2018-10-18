@@ -3,7 +3,7 @@
  *  This software is distributed under the GPL-3 license.  It is free
  *  and open source.
  */
-#include "changestats.users.h"
+ #include "changestats.users.h"
 
 D_CHANGESTAT_FN(d_duplexdyad){
 	/* Declaring variables */
@@ -237,4 +237,55 @@ D_CHANGESTAT_FN(d_gwtesp_layer) {
 	}
 	UNDO_PREVIOUS_TOGGLES(i);
 }
+
+D_CHANGESTAT_FN(d_nodeifactor_layer) { 
+  double s;
+  Vertex head, tail;
+  int i, l, layer_mem[N_NODES];
+  
+  l = INPUT_PARAM[N_INPUT_PARAMS - N_NODES - 1];
+  for(i = 0; i < N_NODES; i++){
+	  layer_mem[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
+  }
+  
+  /* *** don't forget tail -> head */    
+  ZERO_ALL_CHANGESTATS(i);
+  FOR_EACH_TOGGLE(i) {
+    head = HEAD(i); tail = TAIL(i);
+	if(layer_mem[tail - 1] == l && layer_mem[head - 1] == l){
+		s = IS_OUTEDGE(tail, head) ? -1.0 : 1.0;
+		int headpos = INPUT_ATTRIB[head-1];
+		if (headpos!=-1) CHANGE_STAT[headpos] += s;
+	}
+    TOGGLE_IF_MORE_TO_COME(i);
+  }
+  UNDO_PREVIOUS_TOGGLES(i);
+}
+
+D_CHANGESTAT_FN(d_nodeofactor_layer) { 
+  double s;
+  Vertex head, tail;
+  int i, l, layer_mem[N_NODES];
+  
+  l = INPUT_PARAM[N_INPUT_PARAMS - N_NODES - 1];
+  for(i = 0; i < N_NODES; i++){
+	  layer_mem[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
+  }
+  
+  /* *** don't forget tail -> head */    
+  ZERO_ALL_CHANGESTATS(i);
+  FOR_EACH_TOGGLE(i) {
+    head = HEAD(i); tail = TAIL(i);
+	if(layer_mem[tail - 1] == l && layer_mem[head - 1] == l){
+		s = IS_OUTEDGE(tail, HEAD(i)) ? -1.0 : 1.0;
+		int tailpos = INPUT_ATTRIB[tail-1];
+		if (tailpos!=-1) CHANGE_STAT[tailpos] += s;
+	}
+    TOGGLE_IF_MORE_TO_COME(i);
+  }
+  UNDO_PREVIOUS_TOGGLES(i);
+}
+
+
+
 
