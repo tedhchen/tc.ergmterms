@@ -1,7 +1,4 @@
 useDynLib(tc.ergmterms)
 
-import(network,ergm)
-importFrom(statnet.common,statnetStartupMessage)
-
 # Export all names
 exportPattern(".")
