@@ -82,7 +82,7 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
   list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
 }
 
-InitErgmTerm.edgecovsenderattr <- function)(nw, arglist, ...){
+InitErgmTerm.edgecovsenderattr <- function(nw, arglist, ...){
   a <- check.ErgmTerm(nw, arglist, 
                       varnames = c("x", "attrname", "node_attr", "value"),
                       vartypes = c("matrix,network", "character", "character", "character,numeric,logical"),
