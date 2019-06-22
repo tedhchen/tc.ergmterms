@@ -82,7 +82,7 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
   list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
 }
 
-InitErgmTerm.edgecov.sender.attr <- function)(nw, arglist, ...){
+InitErgmTerm.edgecovsenderattr <- function)(nw, arglist, ...){
   a <- check.ErgmTerm(nw, arglist, 
                       varnames = c("x", "attrname", "node_attr", "value"),
                       vartypes = c("matrix,network", "character", "character", "character,numeric,logical"),
@@ -107,7 +107,7 @@ InitErgmTerm.edgecov.sender.attr <- function)(nw, arglist, ...){
   
   inputs <- c(NCOL(xm), as.double(xm), node_attr)
   attr(inputs, "ParamsBeforeCov") <- 1
-  list(name="edgecov", coef.names = cn, inputs = inputs, dependence=FALSE,
+  list(name="edgecov", coef.names = cn, inputs = inputs, dependence=FALSE, pkgname = "tc.ergmterms",
        minval = sum(c(xm)[c(xm)<0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1]),
        maxval = sum(c(xm)[c(xm)>0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1])
   )
