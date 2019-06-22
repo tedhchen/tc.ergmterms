@@ -169,3 +169,36 @@ D_CHANGESTAT_FN(d_difftransties) { //by Bruce Desmarais
   }
   UNDO_PREVIOUS_TOGGLES(i);
 }
+
+D_CHANGESTAT_FN(d_edgecov.sender.attr){
+	double val;
+	Vertex tail, head;
+	int nrow, noffset;
+	int i, edgeflag;
+	
+	noffset = BIPARTITE;
+	if(noffset > 0){
+		/*   nrow = (N_NODES)-(long int)(INPUT_PARAM[0]); */
+		nrow = noffset;
+		}else{
+			nrow = (long int)(INPUT_PARAM[0]);
+			}
+			
+	Vertex node_attr[N_NODES];
+	for(i = 0; i < N_NODES; i++){
+		node_attr[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
+	}
+	
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(node_attr[tail - 1] == 1){
+			edgeflag=IS_OUTEDGE(tail=TAIL(i), head=HEAD(i));
+			val = INPUT_ATTRIB[(head-1-noffset)*nrow+(tail-1)];
+			CHANGE_STAT[0] += edgeflag ? -val : val;
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+		}
+	UNDO_PREVIOUS_TOGGLES(i);
+}

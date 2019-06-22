@@ -81,3 +81,51 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
   }
   list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
 }
+
+InitErgmTerm.edgecov.sender.attr <- function)(nw, arglist, ...){
+  a <- check.ErgmTerm(nw, arglist, 
+                      varnames = c("x", "attrname", "node_attr", "value"),
+                      vartypes = c("matrix,network", "character", "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL, NULL, NULL),
+                      required = c(TRUE, FALSE, TRUE, TRUE))
+  node_attr <- get.node.attr(nw, a$node_attr)
+  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  
+  if(is.network(a$x)){
+    xm <- as.matrix.network(a$x,matrix.type="adjacency",a$attrname)
+  } else {xm <- as.matrix(a$x)}
+  
+  ### Construct the list to return
+  if(!is.null(a$attrname)) {
+    # Note: the sys.call business grabs the name of the x object from the 
+    # user's call.  Not elegant, but it works as long as the user doesn't
+    # pass anything complicated.
+    cn<-paste("edgecov.sender.attr", as.character(a$attrname), sep = ".")
+  } else {
+    cn<-paste("edgecov.sender.attr", as.character(sys.call(0)[[3]][2]), sep = ".")
+  }
+  
+  inputs <- c(NCOL(xm), as.double(xm), node_attr)
+  attr(inputs, "ParamsBeforeCov") <- 1
+  list(name="edgecov", coef.names = cn, inputs = inputs, dependence=FALSE,
+       minval = sum(c(xm)[c(xm)<0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1]),
+       maxval = sum(c(xm)[c(xm)>0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1])
+  )
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
