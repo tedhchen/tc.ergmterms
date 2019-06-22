@@ -138,11 +138,11 @@ InitErgmTerm.istar_nodeattr <- function(nw, arglist, ...) {
   lk<-length(k)
   if(lk==0){return(NULL)}
   if(!is.null(attrarg)){
-    coef.names <- paste("istar_nodeattr",k,".",attrname,sep="")
+    coef.names <- paste("istar",k,".",attrname, "_nodeattr",sep="")
     inputs <- c(k, nodecov, node_attr)
     attr(inputs, "ParamsBeforeCov") <- lk
   }else{
-    coef.names <- paste("istar_nodeattr",k,sep="")
+    coef.names <- paste("istar",k, "_nodeattr",sep="")
     inputs <- c(k, node_attr)
   }
   list(name="istar_nodeattr", coef.names=coef.names, inputs=inputs, minval = 0, conflicts.constraints="idegreedist", pkgname = "tc.ergmterms")

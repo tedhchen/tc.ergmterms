@@ -221,7 +221,7 @@ D_CHANGESTAT_FN(d_istar_nodeattr){
 	}
 	
 	ZERO_ALL_CHANGESTATS(i);
-	if(ninputs>nstats){
+	if(ninputs>(nstats+N_NODES)){
 		/* match on attributes */
 		for (i=0; i < ntoggles; i++) {
 			tail = TAIL(i);
