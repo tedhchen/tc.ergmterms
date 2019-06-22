@@ -82,7 +82,7 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
   list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
 }
 
-InitErgmTerm.edgecov.nodeattr <- function(nw, arglist, ...){
+InitErgmTerm.edgecov_nodeattr <- function(nw, arglist, ...){
   a <- check.ErgmTerm(nw, arglist, 
                       varnames = c("x", "attrname", "node_attr", "value"),
                       vartypes = c("matrix,network", "character", "character", "character,numeric,logical"),
@@ -100,9 +100,9 @@ InitErgmTerm.edgecov.nodeattr <- function(nw, arglist, ...){
     # Note: the sys.call business grabs the name of the x object from the 
     # user's call.  Not elegant, but it works as long as the user doesn't
     # pass anything complicated.
-    cn<-paste("edgecov.nodeattr", as.character(a$attrname), sep = ".")
+    cn<-paste("edgecov_nodeattr", as.character(a$attrname), sep = ".")
   } else {
-    cn<-paste("edgecov.nodeattr", as.character(sys.call(0)[[3]][2]), sep = ".")
+    cn<-paste("edgecov_nodeattr", as.character(sys.call(0)[[3]][2]), sep = ".")
   }
   
   inputs <- c(NCOL(xm), as.double(xm), node_attr)
@@ -113,7 +113,7 @@ InitErgmTerm.edgecov.nodeattr <- function(nw, arglist, ...){
   )
 }
 
-InitErgmTerm.istar.nodeattr <- function(nw, arglist, ...) {
+InitErgmTerm.istar_nodeattr <- function(nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE,
                       varnames = c("k", "attr", "levels", "node_attr", "value"),
                       vartypes = c("numeric", ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
@@ -138,14 +138,14 @@ InitErgmTerm.istar.nodeattr <- function(nw, arglist, ...) {
   lk<-length(k)
   if(lk==0){return(NULL)}
   if(!is.null(attrarg)){
-    coef.names <- paste("istar",k,".",attrname,sep="")
-    inputs <- c(k, nodecov)
+    coef.names <- paste("istar_nodeattr",k,".",attrname,sep="")
+    inputs <- c(k, nodecov, node_attr)
     attr(inputs, "ParamsBeforeCov") <- lk
   }else{
-    coef.names <- paste("istar",k,sep="")
-    inputs <- c(k)
+    coef.names <- paste("istar_nodeattr",k,sep="")
+    inputs <- c(k, node_attr)
   }
-  list(name="istar", coef.names=coef.names, inputs=inputs, minval = 0, conflicts.constraints="idegreedist")
+  list(name="istar_nodeattr", coef.names=coef.names, inputs=inputs, minval = 0, conflicts.constraints="idegreedist", pkgname = "tc.ergmterms")
 }
 
 

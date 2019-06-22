@@ -199,6 +199,71 @@ D_CHANGESTAT_FN(d_edgecov_nodeattr){
 			CHANGE_STAT[0] += edgeflag ? -val : val;
 		}
 		TOGGLE_IF_MORE_TO_COME(i);
-		}
+	}
 	UNDO_PREVIOUS_TOGGLES(i);
 }
+
+
+D_CHANGESTAT_FN(d_istar_nodeattr){
+	double change, headd=0.0;
+	int edgeflag, i, j, kmo;
+	Edge e;
+	Vertex tail, head, node3;
+	int ninputs, nstats;
+	double tailattr;
+	
+	ninputs = (int)N_INPUT_PARAMS;
+	nstats  = (int)N_CHANGE_STATS;
+	
+	Vertex node_attr[N_NODES];
+	for(i = 0; i < N_NODES; i++){
+		node_attr[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
+	}
+	
+	ZERO_ALL_CHANGESTATS(i);
+	if(ninputs>nstats){
+		/* match on attributes */
+		for (i=0; i < ntoggles; i++) {
+			tail = TAIL(i);
+			if(node_attr[tail - 1] == 1){
+				/* edgeflag is 1 if edge exists and will disappear
+				edgeflag is 0 if edge DNE and will appear */
+				edgeflag = IS_OUTEDGE(tail, head = HEAD(i));
+				tailattr = INPUT_ATTRIB[tail-1];
+				if(tailattr == INPUT_ATTRIB[head-1]){
+					headd = - edgeflag;
+					STEP_THROUGH_INEDGES(head, e, node3) {/* step through inedges of head */
+					if(tailattr == INPUT_ATTRIB[node3-1]){++headd;}
+					}
+					for(j=0; j < N_CHANGE_STATS; j++) {
+						kmo = ((int)INPUT_PARAM[j]) - 1;
+						change = CHOOSE(headd, kmo); 
+						CHANGE_STAT[j] += (edgeflag ? - change : change); 
+					}
+				}
+			}
+			TOGGLE_IF_MORE_TO_COME(i);
+		}
+	}else{
+		for (i=0; i < ntoggles; i++) {
+			tail = TAIL(i);
+			if(node_attr[tail - 1] == 1){
+				/* edgeflag is 1 if edge exists and will disappear
+				edgeflag is 0 if edge DNE and will appear */
+				edgeflag = IS_OUTEDGE(tail, head = HEAD(i));
+				headd = IN_DEG[head] - edgeflag;	
+				for(j=0; j < N_CHANGE_STATS; j++) {
+					kmo = ((int)INPUT_PARAM[j]) - 1;
+					change = CHOOSE(headd, kmo); 
+					CHANGE_STAT[j] += (edgeflag ? - change : change); 
+				}
+			}
+			TOGGLE_IF_MORE_TO_COME(i);
+		}
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}
+
+
+
+
