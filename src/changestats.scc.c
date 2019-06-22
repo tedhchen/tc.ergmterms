@@ -170,7 +170,7 @@ D_CHANGESTAT_FN(d_difftransties) { //by Bruce Desmarais
   UNDO_PREVIOUS_TOGGLES(i);
 }
 
-D_CHANGESTAT_FN(d_edgecovsenderattr){
+D_CHANGESTAT_FN(d_edgecov_nodeattr){
 	double val;
 	Vertex tail, head;
 	int nrow, noffset;
