@@ -183,18 +183,13 @@ D_CHANGESTAT_FN(d_edgecov_nodeattr){
 		}else{
 			nrow = (long int)(INPUT_PARAM[0]);
 			}
-			
-	Vertex node_attr[N_NODES];
-	for(i = 0; i < N_NODES; i++){
-		node_attr[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
-	}
 	
 	/* *** don't forget tail -> head */    
 	ZERO_ALL_CHANGESTATS(i);
 	FOR_EACH_TOGGLE(i) {
 		tail = TAIL(i);
-		if(node_attr[tail - 1]){
-			edgeflag=IS_OUTEDGE(tail=TAIL(i), head=HEAD(i));
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			edgeflag=IS_OUTEDGE(tail, head=HEAD(i));
 			val = INPUT_ATTRIB[(head-1-noffset)*nrow+(tail-1)];
 			CHANGE_STAT[0] += edgeflag ? -val : val;
 		}
