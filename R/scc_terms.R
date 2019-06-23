@@ -79,7 +79,7 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
     coef.names <- "difftransties"
     inputs <- NULL
   }
-  list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
+  list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0, pkgname = "tc.ergmterms")
 }
 
 InitErgmTerm.edgecov_senderattr <- function(nw, arglist, ...){
@@ -202,9 +202,59 @@ InitErgmTerm.mutual_senderattr <- function (nw, arglist, ...) {
        pkgname = "tc.ergmterms") 
 }
 
+InitErgmTerm.gwesp_senderatt <- function(nw, arglist, ...) {
+  # the following line was commented out in <InitErgm.gwesp>:
+  #   ergm.checkdirected("gwesp", is.directed(nw), requirement=FALSE)
+  # so, I've not passed 'directed=FALSE' to <check.ErgmTerm>  
+  a <- check.ErgmTerm(nw, arglist, directed = T,
+                      varnames = c("decay","sender_attr", "value"),
+                      vartypes = c("numeric","character", "character,numeric,logical"),
+                      defaultvalues = list(0,NULL, NULL),
+                      required = c(FALSE,TRUE, TRUE))
+  
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  decay<-a$decay
+  list(name="gwtesp_senderattr", coef.names=paste("gwesp.fixed.",decay,"_senderattr",sep=""), inputs=c(decay, sender_attr), pkgname = "tc.ergmterms")
+}
 
-
-
+InitErgmTerm.difftransties_senderattr <- function (nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("attrname", "diff", "levels", "sender_attr", "value"),
+                      vartypes = c("character", "logical", "character,numeric,logical", "numeric","character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, FALSE, NULL, NULL, NULL),
+                      required = c(FALSE, FALSE, FALSE, TRUE, TRUE))
+  if (a$diff) stop("diff=TRUE is not currently implemented in difftransties")
+  attrname <- a$attrname
+  diff <- a$diff
+  
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  if(!is.null(attrname)) {
+    nodecov <- get.node.attr(nw, attrname, "difftransties")
+    u<-sort(unique(nodecov))
+    if(any(is.na(nodecov))){u<-c(u,NA)}
+    nodecov <- match(nodecov,u,nomatch=length(u)+1)
+    ui <- seq(along=u)
+    if (length(u)==1)
+      warning ("Attribute given to difftransties() has only one value", call.=FALSE)
+    if (!diff) {
+      coef.names <- paste("difftransties",attrname,sep=".")
+      inputs <- c(nodecov)
+    } else {
+      coef.names <- paste("difftransties",attrname, u, sep=".")
+      inputs <- c(ui, nodecov)
+      attr(inputs, "ParamsBeforeCov") <- length(ui)
+    }
+  }else{
+    coef.names <- "difftransties"
+    inputs <- NULL
+  }
+  list(name="difftransties_senderattr", coef.names=paste(coef.names, "_senderattr", sep = ""), 
+       inputs=c(inputs, sender_attr), minval=0, pkgname = "tc.ergmterms")
+}
 
 
 
