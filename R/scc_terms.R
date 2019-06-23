@@ -202,7 +202,7 @@ InitErgmTerm.mutual_senderattr <- function (nw, arglist, ...) {
        pkgname = "tc.ergmterms") 
 }
 
-InitErgmTerm.gwesp_senderatt <- function(nw, arglist, ...) {
+InitErgmTerm.gwesp_senderattr <- function(nw, arglist, ...) {
   # the following line was commented out in <InitErgm.gwesp>:
   #   ergm.checkdirected("gwesp", is.directed(nw), requirement=FALSE)
   # so, I've not passed 'directed=FALSE' to <check.ErgmTerm>  
@@ -222,7 +222,7 @@ InitErgmTerm.gwesp_senderatt <- function(nw, arglist, ...) {
 InitErgmTerm.difftransties_senderattr <- function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE,
                       varnames = c("attrname", "diff", "levels", "sender_attr", "value"),
-                      vartypes = c("character", "logical", "character,numeric,logical", "numeric","character", "character,numeric,logical"),
+                      vartypes = c("character", "logical", "character,numeric,logical","character", "character,numeric,logical"),
                       defaultvalues = list(NULL, FALSE, NULL, NULL, NULL),
                       required = c(FALSE, FALSE, FALSE, TRUE, TRUE))
   if (a$diff) stop("diff=TRUE is not currently implemented in difftransties")
