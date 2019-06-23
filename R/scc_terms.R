@@ -149,7 +149,40 @@ InitErgmTerm.istar_nodeattr <- function(nw, arglist, ...) {
 }
 
 
-
+InitErgmTerm.ostar_nodeattr <- function(nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("k", "attr", "levels", "node_attr", "value"),
+                      vartypes = c("numeric", ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL, NULL, NULL, NULL),
+                      required = c(TRUE, FALSE, FALSE, TRUE, TRUE))
+  attrarg <- a$attr
+  levels <- a$levels
+  
+  node_attr <- get.node.attr(nw, a$node_attr)
+  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  
+  k<-a$k
+  if(!is.null(attrarg)) {
+    nodecov <- ergm_get_vattr(attrarg, nw)
+    attrname <- attr(nodecov, "name")
+    u <- ergm_attr_levels(levels, nodecov, nw, levels = sort(unique(nodecov)))
+    if(any(is.na(nodecov))){u<-c(u,NA)}
+    # Recode to numeric
+    nodecov <- match(nodecov,u,nomatch=length(u)+1)
+  }
+  lk<-length(k)
+  if(lk==0){return(NULL)}
+  
+  if(!is.null(attrarg)){
+    coef.names <- paste("ostar",k,".",attrname, "_nodeattr",sep="")
+    inputs <- c(k, nodecov, node_attr)
+    attr(inputs, "ParamsBeforeCov") <- lk
+  }else{
+    coef.names <- paste("ostar",k, "_nodeattr",sep="")
+    inputs <- c(k, node_attr)
+  }
+  list(name="ostar_nodeattr", coef.names=coef.names, inputs=inputs, minval=0, conflicts.constraints="odegreedist", pkgname = "tc.ergmterms")  
+}
 
 
 
