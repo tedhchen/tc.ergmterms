@@ -193,7 +193,7 @@ D_CHANGESTAT_FN(d_edgecov_nodeattr){
 	ZERO_ALL_CHANGESTATS(i);
 	FOR_EACH_TOGGLE(i) {
 		tail = TAIL(i);
-		if(node_attr[tail - 1] == 1){
+		if(node_attr[tail - 1]){
 			edgeflag=IS_OUTEDGE(tail=TAIL(i), head=HEAD(i));
 			val = INPUT_ATTRIB[(head-1-noffset)*nrow+(tail-1)];
 			CHANGE_STAT[0] += edgeflag ? -val : val;
