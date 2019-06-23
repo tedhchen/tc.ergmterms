@@ -210,17 +210,12 @@ D_CHANGESTAT_FN(d_istar_nodeattr){
 	ninputs = (int)N_INPUT_PARAMS;
 	nstats  = (int)N_CHANGE_STATS;
 	
-	Vertex node_attr[N_NODES];
-	for(i = 0; i < N_NODES; i++){
-		node_attr[i] = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + i];
-	}
-	
 	ZERO_ALL_CHANGESTATS(i);
 	if(ninputs>(nstats+N_NODES)){
 		/* match on attributes */
 		for (i=0; i < ntoggles; i++) {
 			tail = TAIL(i);
-			if(node_attr[tail - 1] == 1){
+			if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
 				/* edgeflag is 1 if edge exists and will disappear
 				edgeflag is 0 if edge DNE and will appear */
 				edgeflag = IS_OUTEDGE(tail, head = HEAD(i));
@@ -242,7 +237,7 @@ D_CHANGESTAT_FN(d_istar_nodeattr){
 	}else{
 		for (i=0; i < ntoggles; i++) {
 			tail = TAIL(i);
-			if(node_attr[tail - 1] == 1){
+			if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
 				/* edgeflag is 1 if edge exists and will disappear
 				edgeflag is 0 if edge DNE and will appear */
 				edgeflag = IS_OUTEDGE(tail, head = HEAD(i));
