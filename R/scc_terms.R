@@ -82,14 +82,14 @@ InitErgmTerm.difftransties<-function (nw, arglist, ...) {
   list(name="difftransties", coef.names=coef.names, inputs=inputs, minval=0)
 }
 
-InitErgmTerm.edgecov_nodeattr <- function(nw, arglist, ...){
-  a <- check.ErgmTerm(nw, arglist, 
-                      varnames = c("x", "attrname", "node_attr", "value"),
+InitErgmTerm.edgecov_senderattr <- function(nw, arglist, ...){
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("x", "attrname", "sender_attr", "value"),
                       vartypes = c("matrix,network", "character", "character", "character,numeric,logical"),
                       defaultvalues = list(NULL, NULL, NULL, NULL),
                       required = c(TRUE, FALSE, TRUE, TRUE))
-  node_attr <- get.node.attr(nw, a$node_attr)
-  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
   
   if(is.network(a$x)){
     xm <- as.matrix.network(a$x,matrix.type="adjacency",a$attrname)
@@ -100,30 +100,30 @@ InitErgmTerm.edgecov_nodeattr <- function(nw, arglist, ...){
     # Note: the sys.call business grabs the name of the x object from the 
     # user's call.  Not elegant, but it works as long as the user doesn't
     # pass anything complicated.
-    cn<-paste("edgecov_nodeattr", as.character(a$attrname), sep = ".")
+    cn<-paste("edgecov_senderattr", as.character(a$attrname), sep = ".")
   } else {
-    cn<-paste("edgecov_nodeattr", as.character(sys.call(0)[[3]][2]), sep = ".")
+    cn<-paste("edgecov_senderattr", as.character(sys.call(0)[[3]][2]), sep = ".")
   }
   
-  inputs <- c(NCOL(xm), as.double(xm), node_attr)
+  inputs <- c(NCOL(xm), as.double(xm), sender_attr)
   attr(inputs, "ParamsBeforeCov") <- 1
-  list(name="edgecov_nodeattr", coef.names = cn, inputs = inputs, dependence=FALSE, pkgname = "tc.ergmterms",
-       minval = sum(c(xm)[c(xm)<0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1]),
-       maxval = sum(c(xm)[c(xm)>0 & c(matrix(node_attr, nrow = length(node_attr), ncol = length(node_attr), byrow = F)) == 1])
+  list(name="edgecov_senderattr", coef.names = cn, inputs = inputs, dependence=FALSE, pkgname = "tc.ergmterms",
+       minval = sum(c(xm)[c(xm)<0 & c(matrix(sender_attr, nrow = length(sender_attr), ncol = length(sender_attr), byrow = F)) == 1]),
+       maxval = sum(c(xm)[c(xm)>0 & c(matrix(sender_attr, nrow = length(sender_attr), ncol = length(sender_attr), byrow = F)) == 1])
   )
 }
 
-InitErgmTerm.istar_nodeattr <- function(nw, arglist, ...) {
+InitErgmTerm.istar_senderattr <- function(nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE,
-                      varnames = c("k", "attr", "levels", "node_attr", "value"),
+                      varnames = c("k", "attr", "levels", "sender_attr", "value"),
                       vartypes = c("numeric", ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
                       defaultvalues = list(NULL, NULL, NULL, NULL, NULL),
                       required = c(TRUE, FALSE, FALSE, TRUE, TRUE))
   attrarg <- a$attr
   levels <- a$levels    
   
-  node_attr <- get.node.attr(nw, a$node_attr)
-  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
   
   k <- a$k
   if(!is.null(attrarg)) {
@@ -138,28 +138,28 @@ InitErgmTerm.istar_nodeattr <- function(nw, arglist, ...) {
   lk<-length(k)
   if(lk==0){return(NULL)}
   if(!is.null(attrarg)){
-    coef.names <- paste("istar",k,".",attrname, "_nodeattr",sep="")
-    inputs <- c(k, nodecov, node_attr)
+    coef.names <- paste("istar",k,".",attrname, "_senderattr",sep="")
+    inputs <- c(k, nodecov, sender_attr)
     attr(inputs, "ParamsBeforeCov") <- lk
   }else{
-    coef.names <- paste("istar",k, "_nodeattr",sep="")
-    inputs <- c(k, node_attr)
+    coef.names <- paste("istar",k, "_senderattr",sep="")
+    inputs <- c(k, sender_attr)
   }
-  list(name="istar_nodeattr", coef.names=coef.names, inputs=inputs, minval = 0, conflicts.constraints="idegreedist", pkgname = "tc.ergmterms")
+  list(name="istar_senderattr", coef.names=coef.names, inputs=inputs, minval = 0, conflicts.constraints="idegreedist", pkgname = "tc.ergmterms")
 }
 
 
-InitErgmTerm.ostar_nodeattr <- function(nw, arglist, ...) {
+InitErgmTerm.ostar_senderattr <- function(nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE,
-                      varnames = c("k", "attr", "levels", "node_attr", "value"),
+                      varnames = c("k", "attr", "levels", "sender_attr", "value"),
                       vartypes = c("numeric", ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
                       defaultvalues = list(NULL, NULL, NULL, NULL, NULL),
                       required = c(TRUE, FALSE, FALSE, TRUE, TRUE))
   attrarg <- a$attr
-  levels <- a$levels
+  levels <- a$levels    
   
-  node_attr <- get.node.attr(nw, a$node_attr)
-  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
   
   k<-a$k
   if(!is.null(attrarg)) {
@@ -174,30 +174,30 @@ InitErgmTerm.ostar_nodeattr <- function(nw, arglist, ...) {
   if(lk==0){return(NULL)}
   
   if(!is.null(attrarg)){
-    coef.names <- paste("ostar",k,".",attrname, "_nodeattr",sep="")
-    inputs <- c(k, nodecov, node_attr)
+    coef.names <- paste("ostar",k,".",attrname, "_senderattr",sep="")
+    inputs <- c(k, nodecov, sender_attr)
     attr(inputs, "ParamsBeforeCov") <- lk
   }else{
-    coef.names <- paste("ostar",k, "_nodeattr",sep="")
-    inputs <- c(k, node_attr)
+    coef.names <- paste("ostar",k, "_senderattr",sep="")
+    inputs <- c(k, sender_attr)
   }
-  list(name="ostar_nodeattr", coef.names=coef.names, inputs=inputs, minval=0, conflicts.constraints="odegreedist", pkgname = "tc.ergmterms")  
+  list(name="ostar_senderattr", coef.names=coef.names, inputs=inputs, minval=0, conflicts.constraints="odegreedist", pkgname = "tc.ergmterms")  
 }
 
-InitErgmTerm.mutual_nodeattr <- function (nw, arglist, ...) {
+InitErgmTerm.mutual_senderattr <- function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE, bipartite=NULL,
-                      varnames = c("node_attr", "value"),
+                      varnames = c("sender_attr", "value"),
                       vartypes = c("character", "character,numeric,logical"),
                       defaultvalues = list(NULL, NULL),
                       required = c(FALSE, FALSE))
   
-  node_attr <- get.node.attr(nw, a$node_attr)
-  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
   
   ### Construct the list to return
-  list(name="mutual_nodeattr",                      #name: required
-       coef.names = "mutual_nodeattr",        #coef.names: required
-       inputs=node_attr,
+  list(name="mutual_senderattr",                      #name: required
+       coef.names = "mutual_senderattr",        #coef.names: required
+       inputs=sender_attr,
        minval = 0,
        pkgname = "tc.ergmterms") 
 }

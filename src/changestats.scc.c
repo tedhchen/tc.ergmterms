@@ -170,7 +170,7 @@ D_CHANGESTAT_FN(d_difftransties) { //by Bruce Desmarais
   UNDO_PREVIOUS_TOGGLES(i);
 }
 
-D_CHANGESTAT_FN(d_edgecov_nodeattr){
+D_CHANGESTAT_FN(d_edgecov_senderattr){
 	double val;
 	Vertex tail, head;
 	int nrow, noffset;
@@ -199,7 +199,7 @@ D_CHANGESTAT_FN(d_edgecov_nodeattr){
 }
 
 
-D_CHANGESTAT_FN(d_istar_nodeattr){
+D_CHANGESTAT_FN(d_istar_senderattr){
 	double change, headd=0.0;
 	int edgeflag, i, j, kmo;
 	Edge e;
@@ -254,7 +254,7 @@ D_CHANGESTAT_FN(d_istar_nodeattr){
 	UNDO_PREVIOUS_TOGGLES(i);
 }
 
-D_CHANGESTAT_FN(d_ostar_nodeattr) { 
+D_CHANGESTAT_FN(d_ostar_senderattr) { 
 	double change, headd=0.0;
 	int edgeflag, i, j, kmo;
 	Edge e;
@@ -310,7 +310,7 @@ D_CHANGESTAT_FN(d_ostar_nodeattr) {
 	UNDO_PREVIOUS_TOGGLES(i);
 }
 
-D_CHANGESTAT_FN(d_mutual_nodeattr) { 
+D_CHANGESTAT_FN(d_mutual_senderattr) { 
 	double matchval, change;
 	Vertex tail, head;
 	int i, j, ninputs, noattr;
