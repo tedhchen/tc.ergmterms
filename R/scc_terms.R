@@ -318,7 +318,7 @@ InitErgmTerm.nodemix_senderattr <- function (nw, arglist, ...) {
   nr <- length(u)
   nc <- length(u)
   
-  levels2.list <- transpose(expand.grid(row = u, col = u, stringsAsFactors=FALSE))
+  levels2.list <- purrr::transpose(expand.grid(row = u, col = u, stringsAsFactors=FALSE))
   indices2.grid <- expand.grid(row = 1:nr, col = 1:nc)
   uun <- as.vector(outer(u,u,paste,sep="."))
   
