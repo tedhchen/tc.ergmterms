@@ -310,4 +310,39 @@ D_CHANGESTAT_FN(d_ostar_nodeattr) {
 	UNDO_PREVIOUS_TOGGLES(i);
 }
 
+D_CHANGESTAT_FN(d_mutual) { 
+	double matchval, change;
+	Vertex tail, head;
+	int i, j, ninputs, noattr;
 
+	ninputs = N_INPUT_PARAMS - N_NODES;
+	noattr = (N_INPUT_PARAMS == 0);
+
+	/* *** don't forget tail -> head */		
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			if (IS_OUTEDGE(head = HEAD(i),tail)) { /* otherwise, no change occurs */
+				change = IS_OUTEDGE(tail, head) ? -1.0 : 1.0 ;
+				if (noattr) { /* "plain vanilla" mutual, without node attributes */
+					CHANGE_STAT[0] += change;
+				} else { /* Only consider mutuals where node attributes match */
+					matchval = INPUT_PARAM[tail+ninputs-1];
+					if (matchval == INPUT_PARAM[head+ninputs-1]) { /* We have a match! */
+						if (ninputs==0) {/* diff=F in network statistic specification */
+							CHANGE_STAT[0] += change;
+						} else { /* diff=T */
+							for (j=0; j<ninputs; j++) {
+								if (matchval == INPUT_PARAM[j]) 
+									CHANGE_STAT[j] += change;
+							}
+						}
+					}
+				}
+			}
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}

@@ -184,7 +184,23 @@ InitErgmTerm.ostar_nodeattr <- function(nw, arglist, ...) {
   list(name="ostar_nodeattr", coef.names=coef.names, inputs=inputs, minval=0, conflicts.constraints="odegreedist", pkgname = "tc.ergmterms")  
 }
 
-
+InitErgmTerm.mutual_nodeattr <- function (nw, arglist, ...)) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE, bipartite=NULL,
+                      varnames = c("node_attr", "value"),
+                      vartypes = c("character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL),
+                      required = c(FALSE, FALSE))
+  
+  node_attr <- get.node.attr(nw, a$node_attr)
+  node_attr <- ifelse(node_attr == a$value, 1, 0)
+  
+  ### Construct the list to return
+  list(name="mutual_nodeattr",                      #name: required
+       coef.names = "mutual_nodeattr",        #coef.names: required
+       inputs=node_attr,
+       minval = 0,
+       pkgname = "tc.ergmterms") 
+}
 
 
 
