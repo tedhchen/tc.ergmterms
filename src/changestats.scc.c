@@ -469,3 +469,79 @@ D_CHANGESTAT_FN(d_difftransties_senderattr) { //by Bruce Desmarais
 	}
 	UNDO_PREVIOUS_TOGGLES(i);
 }
+
+D_CHANGESTAT_FN(d_nodeicov_senderattr) { 
+	Vertex tail, head;
+	int i, edgeflag;
+	unsigned int oshift = (N_INPUT_PARAMS - N_NODES) / N_CHANGE_STATS;
+	
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			edgeflag=IS_OUTEDGE(tail, head = HEAD(i));
+			for(unsigned int j=0, o=0; j<N_CHANGE_STATS; j++, o+=oshift){
+				double sum = INPUT_ATTRIB[head+o-1];
+				CHANGE_STAT[j] += edgeflag ? -sum : sum;
+			}
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}
+
+D_CHANGESTAT_FN(d_nodeocov_senderattr) {
+	Vertex tail, head;
+	int i, edgeflag;
+	unsigned int oshift = (N_INPUT_PARAMS - N_NODES) / N_CHANGE_STATS;
+	
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			edgeflag=IS_OUTEDGE(tail = TAIL(i), head = HEAD(i));
+			for(unsigned int j=0, o=0; j<N_CHANGE_STATS; j++, o+=oshift){
+				double sum = INPUT_ATTRIB[tail+o-1];
+				CHANGE_STAT[j] += edgeflag ? -sum : sum;
+			}
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}
+
+D_CHANGESTAT_FN(d_nodemix_senderattr) {
+	Vertex tail, head;
+	int i, j, ninputs, ninputs2;
+	double rtype, ctype, tmp, change;
+	
+	ninputs = N_INPUT_PARAMS - N_NODES - N_NODES;
+	ninputs2 = ninputs/2;
+	
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail=TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			change = IS_OUTEDGE(tail, head=HEAD(i)) ? -1.0 : 1.0;
+			
+			/*Find the node covariate values (types) for the tail and head*/
+			rtype=INPUT_PARAM[tail+ninputs-1];
+			ctype=INPUT_PARAM[head+ninputs-1];
+			if (!DIRECTED && rtype > ctype)  {
+				tmp = rtype; rtype = ctype; ctype = tmp; /* swap rtype, ctype */
+			}
+			/*Find the right statistic to update */
+			for(j=0; j<ninputs2; j++){
+				if((INPUT_PARAM[j] == rtype) && (INPUT_PARAM[j+ninputs2] == ctype)){
+					CHANGE_STAT[j] += change;
+					j = ninputs2; /* leave the for loop */
+				}
+			} 
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}

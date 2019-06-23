@@ -256,6 +256,93 @@ InitErgmTerm.difftransties_senderattr <- function (nw, arglist, ...) {
        inputs=c(inputs, sender_attr), minval=0, pkgname = "tc.ergmterms")
 }
 
+InitErgmTerm.nodeicov_senderattr <- function (nw, arglist, ...) {
+  ### Check the network and arguments to make sure they are appropriate.
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("attr", "sender_attr", "value"),
+                      vartypes = c(ERGM_VATTR_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL, NULL),
+                      required = c(TRUE, TRUE, TRUE))
+  ### Process the arguments
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  nodecov <- ergm_get_vattr(a$attr, nw, accept="numeric", multiple="matrix")
+  coef.names <- paste("nodeicov",attr(nodecov, "name"),sep=".")
+  if(is.matrix(nodecov)) coef.names <- paste(coef.names, NVL(colnames(nodecov), seq_len(ncol(nodecov))), sep=".")
+  
+  list(name="nodeicov_senderattr", coef.names=paste(coef.names, "_senderattr", sep = ""), inputs=c(nodecov, sender_attr), 
+       dependence=FALSE, pkgname = "tc.ergmterms")
+}
 
+InitErgmTerm.nodeocov_senderattr <- function (nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE,
+                      varnames = c("attr", "sender_attr", "value"),
+                      vartypes = c(ERGM_VATTR_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL, NULL),
+                      required = c(TRUE, TRUE, TRUE))
+  ### Process the arguments
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  nodecov <- ergm_get_vattr(a$attr, nw, accept="numeric", multiple="matrix")
+  coef.names <- paste("nodeocov",attr(nodecov, "name"),sep=".")
+  if(is.matrix(nodecov)) coef.names <- paste(coef.names, NVL(colnames(nodecov), seq_len(ncol(nodecov))), sep=".")
+  
+  list(name="nodeocov_senderattr", coef.names=paste(coef.names, "_senderattr", sep = ""), inputs=c(nodecov, sender_attr), 
+       dependence=FALSE, pkgname = "tc.ergmterms")
+}
 
+InitErgmTerm.nodemix_senderattr <- function (nw, arglist, ...) {
+  ### Check the network and arguments to make sure they are appropriate.
+  a <- check.ErgmTerm(nw, arglist, directed = TRUE,
+                      varnames = c("attr", "base", "levels", "levels2", "sender_attr", "value"),
+                      vartypes = c(ERGM_VATTR_SPEC, "numeric", ERGM_LEVELS_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, NULL, NULL, NULL, NULL, NULL),
+                      required = c(TRUE, FALSE, FALSE, FALSE, TRUE, TRUE),
+                      dep.inform = list(FALSE, "levels2", FALSE, FALSE, FALSE, FALSE))
+  attrarg <- a$attr
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+
+  ### Process the arguments
+  nodecov <- ergm_get_vattr(attrarg, nw)
+  attrname <- attr(nodecov, "name")
+  
+  # So one mode, but could be directed or undirected
+  u <- ergm_attr_levels(a$levels, nodecov, nw, sort(unique(nodecov)))
+  namescov <- u
+  
+  if(any(is.na(nodecov))){u<-c(u,NA)}
+  
+  nr <- length(u)
+  nc <- length(u)
+  
+  levels2.list <- transpose(expand.grid(row = u, col = u, stringsAsFactors=FALSE))
+  indices2.grid <- expand.grid(row = 1:nr, col = 1:nc)
+  uun <- as.vector(outer(u,u,paste,sep="."))
+  
+  
+  levels2.sel <- ergm_attr_levels(a$levels2, list(row = nodecov, col = nodecov), nw, levels2.list)
+  if((!hasName(attr(a,"missing"), "levels2") || attr(a,"missing")["levels2"]) && any(NVL(a$base,0)!=0)) levels2.sel <- levels2.sel[-a$base]
+  
+  rows2keep <- match(levels2.sel,levels2.list, NA)
+  rows2keep <- rows2keep[!is.na(rows2keep)]
+  
+  u <- indices2.grid[rows2keep,]
+  uun <- uun[rows2keep]
+  
+  nodecov <- match(nodecov,namescov,nomatch=length(namescov)+1)
+  
+  name <- "nodemix_senderattr"
+  cn <- paste("mix", paste(attrname,collapse="."), uun, sep=".")
+  inputs <- c(u[,1], u[,2], nodecov)
+  attr(inputs, "ParamsBeforeCov") <- 2*length(uun)
+  
+  ### Construct the list to return
+  list(name = name, coef.names = paste(cn, "_senderattr", sep = ""), # required
+       inputs = c(inputs, sender_attr), 
+       dependence = FALSE, # So we don't use MCMC if not necessary
+       minval = 0, pkgname = "tc.ergmterms")
+}
 
