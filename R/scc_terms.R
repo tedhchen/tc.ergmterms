@@ -184,7 +184,7 @@ InitErgmTerm.ostar_nodeattr <- function(nw, arglist, ...) {
   list(name="ostar_nodeattr", coef.names=coef.names, inputs=inputs, minval=0, conflicts.constraints="odegreedist", pkgname = "tc.ergmterms")  
 }
 
-InitErgmTerm.mutual_nodeattr <- function (nw, arglist, ...)) {
+InitErgmTerm.mutual_nodeattr <- function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE, bipartite=NULL,
                       varnames = c("node_attr", "value"),
                       vartypes = c("character", "character,numeric,logical"),

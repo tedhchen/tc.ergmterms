@@ -310,7 +310,7 @@ D_CHANGESTAT_FN(d_ostar_nodeattr) {
 	UNDO_PREVIOUS_TOGGLES(i);
 }
 
-D_CHANGESTAT_FN(d_mutual) { 
+D_CHANGESTAT_FN(d_mutual_nodeattr) { 
 	double matchval, change;
 	Vertex tail, head;
 	int i, j, ninputs, noattr;
