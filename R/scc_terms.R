@@ -346,3 +346,76 @@ InitErgmTerm.nodemix_senderattr <- function (nw, arglist, ...) {
        minval = 0, pkgname = "tc.ergmterms")
 }
 
+InitErgmTerm.nodeifactor_senderattr <- function (nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
+                      varnames = c("attr", "levels", "sender_attr", "value"),
+                      vartypes = c(ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, LEVELS_BASE1, NULL, NULL),
+                      required = c(TRUE, FALSE, TRUE, TRUE),
+                      dep.inform = list(FALSE, FALSE, FALSE, FALSE))
+  attrarg <- a$attr                        
+  levels <- a$levels    
+  
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  nodecov <- ergm_get_vattr(attrarg, nw)
+  attrname <- attr(nodecov, "name")
+  u <- ergm_attr_levels(levels, nodecov, nw, levels = sort(unique(nodecov)))
+  
+  if (attr(a,"missing")["levels"] && any(NVL(a$base,0)!=0)) {
+    u <- u[-a$base]
+  }
+  
+  if (length(u)==0) { # Get outta here!  (can happen if user passes attribute with one value)
+    return()
+  } 
+  #   Recode to numeric
+  nodepos <- match(nodecov,u,nomatch=0)-1
+  ### Construct the list to return
+  inputs <- nodepos
+  list(name="nodeifactor_senderattr",                                        #required
+       coef.names = paste("nodeifactor.", paste(attrname,collapse="."), ".", u, "_senderattr", sep = ""), #required
+       inputs = c(inputs, sender_attr),
+       dependence = FALSE, # So we don't use MCMC if not necessary
+       minval = 0
+  )
+}
+
+InitErgmTerm.nodeofactor_senderattr<-function (nw, arglist, ...) {
+  a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
+                      varnames = c("attr", "levels", "sender_attr", "value"),
+                      vartypes = c(ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
+                      defaultvalues = list(NULL, LEVELS_BASE1, NULL, NULL),
+                      required = c(TRUE, FALSE, TRUE, TRUE),
+                      dep.inform = list(FALSE, FALSE, FALSE, FALSE))
+  
+  attrarg <- a$attr                        
+  levels <- a$levels 
+       
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  nodecov <- ergm_get_vattr(attrarg, nw)
+  attrname <- attr(nodecov, "name")
+  u <- ergm_attr_levels(levels, nodecov, nw, levels = sort(unique(nodecov)))
+  
+  if (attr(a,"missing")["levels"] && any(NVL(a$base,0)!=0)) {
+    u <- u[-a$base]
+  }
+  
+  if (length(u)==0) { # Get outta here!  (can happen if user passes attribute with one value)
+    return()
+  }  
+  #   Recode to numeric
+  nodepos <- match(nodecov,u,nomatch=0)-1
+  
+  ### Construct the list to return
+  inputs <- nodepos
+  list(name="nodeofactor_senderattr",                                        #required
+       coef.names = paste("nodeofactor.", paste(attrname,collapse="."), ".", u, "_senderattr", sep = ""), #required
+       inputs = c(inputs, sender_attr),
+       dependence = FALSE, # So we don't use MCMC if not necessary
+       minval = 0
+  )
+}

@@ -545,3 +545,41 @@ D_CHANGESTAT_FN(d_nodemix_senderattr) {
 	}
 	UNDO_PREVIOUS_TOGGLES(i);
 }
+
+D_CHANGESTAT_FN(d_nodeofactor_senderattr) { 
+	double s;
+	Vertex tail;
+	int i;
+  
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			s = IS_OUTEDGE(tail, HEAD(i)) ? -1.0 : 1.0;
+			int tailpos = INPUT_ATTRIB[tail-1];
+			if (tailpos!=-1) CHANGE_STAT[tailpos] += s;
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}
+
+D_CHANGESTAT_FN(d_nodeifactor_senderattr) { 
+	double s;
+	Vertex head;
+	int i;
+  
+	/* *** don't forget tail -> head */    
+	ZERO_ALL_CHANGESTATS(i);
+	FOR_EACH_TOGGLE(i) {
+		tail = TAIL(i);
+		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+			s = IS_OUTEDGE(tail, head = HEAD(i);) ? -1.0 : 1.0;
+			int headpos = INPUT_ATTRIB[head-1];
+			if (headpos!=-1) CHANGE_STAT[headpos] += s;
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}
