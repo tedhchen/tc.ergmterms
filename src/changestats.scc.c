@@ -575,7 +575,7 @@ D_CHANGESTAT_FN(d_nodeifactor_senderattr) {
 	FOR_EACH_TOGGLE(i) {
 		tail = TAIL(i);
 		if(INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
-			s = IS_OUTEDGE(tail, head = HEAD(i);) ? -1.0 : 1.0;
+			s = IS_OUTEDGE(tail, head = HEAD(i)) ? -1.0 : 1.0;
 			int headpos = INPUT_ATTRIB[head-1];
 			if (headpos!=-1) CHANGE_STAT[headpos] += s;
 		}
