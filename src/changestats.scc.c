@@ -567,7 +567,7 @@ D_CHANGESTAT_FN(d_nodeofactor_senderattr) {
 
 D_CHANGESTAT_FN(d_nodeifactor_senderattr) { 
 	double s;
-	Vertex head;
+	Vertex head, tail;
 	int i;
   
 	/* *** don't forget tail -> head */    
