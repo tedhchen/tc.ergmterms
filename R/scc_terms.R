@@ -350,8 +350,8 @@ InitErgmTerm.nodeifactor_senderattr <- function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
                       varnames = c("attr", "levels", "sender_attr", "value"),
                       vartypes = c(ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
-                      defaultvalues = list(NULL, LEVELS_BASE1, NULL, NULL),
-                      required = c(TRUE, FALSE, TRUE, TRUE),
+                      defaultvalues = list(NULL, NULL, NULL, NULL),
+                      required = c(TRUE, TRUE, TRUE, TRUE),
                       dep.inform = list(FALSE, FALSE, FALSE, FALSE))
   attrarg <- a$attr                        
   levels <- a$levels    
@@ -386,8 +386,8 @@ InitErgmTerm.nodeofactor_senderattr<-function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE, 
                       varnames = c("attr", "levels", "sender_attr", "value"),
                       vartypes = c(ERGM_VATTR_SPEC, ERGM_LEVELS_SPEC, "character", "character,numeric,logical"),
-                      defaultvalues = list(NULL, LEVELS_BASE1, NULL, NULL),
-                      required = c(TRUE, FALSE, TRUE, TRUE),
+                      defaultvalues = list(NULL, NULL, NULL, NULL),
+                      required = c(TRUE, TRUE, TRUE, TRUE),
                       dep.inform = list(FALSE, FALSE, FALSE, FALSE))
   
   attrarg <- a$attr                        
