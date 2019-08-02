@@ -599,7 +599,7 @@ D_CHANGESTAT_FN(d_gwtesp_diff_senderattr) {
 	/* *** don't forget tail -> head */		
 	FOR_EACH_TOGGLE(i){			
 		tail = TAIL(i);
-		if(tailattr=INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]){
+		if((tailattr=INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1])){
 			cumchange=0.0;
 			L2th=0;
 			ochange = IS_OUTEDGE(tail, head=HEAD(i)) ? -1 : 0;
