@@ -660,10 +660,11 @@ D_CHANGESTAT_FN(d_gwtesp_same_senderattr) {
 	/* *** don't forget tail -> head */		
 	FOR_EACH_TOGGLE(i){			
 		tail = TAIL(i);
+		head = HEAD(i);
 		if((tailattr=INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1]) && (headattr = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + head - 1])){
 			cumchange=0.0;
 			L2th=0;
-			ochange = IS_OUTEDGE(tail, head=HEAD(i)) ? -1 : 0;
+			ochange = IS_OUTEDGE(tail, head) ? -1 : 0;
 			echange = 2*ochange + 1;
 			/* step through outedges of head	*/
 			STEP_THROUGH_OUTEDGES(head, e, u){
