@@ -607,11 +607,11 @@ D_CHANGESTAT_FN(d_gwtesp_diff_senderattr) {
 			echange = 2*ochange + 1;
 			/* step through outedges of head	*/
 			STEP_THROUGH_OUTEDGES(head, e, u){
-				if (IS_OUTEDGE(tail, u) && (tailattr != headattr) && (tailattr != INPUT_PARAM[N_INPUT_PARAMS - N_NODES + u - 1];)){
+				if (IS_OUTEDGE(tail, u) && (tailattr != headattr) && (tailattr != INPUT_PARAM[N_INPUT_PARAMS - N_NODES + u - 1])){
 					L2tu=ochange;
 					/* step through inedges of u */
 					STEP_THROUGH_INEDGES(u, f, v){
-						if(IS_OUTEDGE(tail, v) && (tailattr != INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1];)) L2tu++;
+						if(IS_OUTEDGE(tail, v) && (tailattr != INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1])) L2tu++;
 					}
 					cumchange += pow(oneexpa,(double)L2tu);
 				}
