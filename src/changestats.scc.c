@@ -705,3 +705,64 @@ D_CHANGESTAT_FN(d_gwtesp_same_senderattr) {
 	}
 	UNDO_PREVIOUS_TOGGLES(i);
 }
+
+D_CHANGESTAT_FN(d_gwtesp_mix_senderattr) { 
+	Edge e, f;
+	int i, echange, ochange;
+	int L2th, L2tu, L2uh;
+	Vertex tail, head, u, v;
+	double alpha, oneexpa, cumchange;
+	double tailattr, headattr;
+	
+	CHANGE_STAT[0] = 0.0;
+	alpha = INPUT_PARAM[0];
+	oneexpa = 1.0-exp(-alpha);
+	
+	/* *** don't forget tail -> head */		
+	FOR_EACH_TOGGLE(i){			
+		tail = TAIL(i);
+		if((tailattr=INPUT_PARAM[N_INPUT_PARAMS - N_NODES + tail - 1])){
+			cumchange=0.0;
+			L2th=0;
+			ochange = IS_OUTEDGE(tail, head=HEAD(i)) ? -1 : 0;
+			headattr = INPUT_PARAM[N_INPUT_PARAMS - N_NODES + head - 1];
+			echange = 2*ochange + 1;
+			/* step through outedges of head	*/
+			STEP_THROUGH_OUTEDGES(head, e, u){
+				if (IS_OUTEDGE(tail, u) && (tailattr == headattr) && (tailattr != INPUT_PARAM[N_INPUT_PARAMS - N_NODES + u - 1])){
+					L2tu=ochange;
+					/* step through inedges of u */
+					STEP_THROUGH_INEDGES(u, f, v){
+						if(IS_OUTEDGE(tail, v) && (tailattr == INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1])) L2tu++;
+					}
+					cumchange += pow(oneexpa,(double)L2tu);
+				}
+			}
+			/* step through inedges of head */
+			
+			STEP_THROUGH_INEDGES(head, e, u){
+				if (IS_OUTEDGE(tail, u) && (tailattr != headattr) && (tailattr == INPUT_PARAM[N_INPUT_PARAMS - N_NODES + u - 1])){
+					L2th++;
+				}
+				if (IS_OUTEDGE(u, tail) && (tailattr == INPUT_PARAM[N_INPUT_PARAMS - N_NODES + u - 1]) && (headattr != tailattr)){
+					L2uh=ochange;
+					/* step through outedges of u */
+					STEP_THROUGH_OUTEDGES(u, f, v){
+						if(IS_OUTEDGE(v, head) && (INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1] != tailattr)) L2uh++;
+					}
+					cumchange += pow(oneexpa,(double)L2uh) ;
+				}
+			}
+			
+			if(alpha < 100.0){
+				cumchange += exp(alpha)*(1.0-pow(oneexpa,(double)L2th)) ;
+			}else{
+				cumchange += (double)L2th;
+			}
+			cumchange	= echange*cumchange;
+			(CHANGE_STAT[0]) += cumchange;
+		}
+		TOGGLE_IF_MORE_TO_COME(i);
+	}
+	UNDO_PREVIOUS_TOGGLES(i);
+}

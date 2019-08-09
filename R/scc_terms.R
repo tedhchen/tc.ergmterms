@@ -253,6 +253,25 @@ InitErgmTerm.gwesp_same_senderattr <- function(nw, arglist, ...) {
   list(name="gwtesp_same_senderattr", coef.names=paste("gwesp_same.fixed.",decay,"_senderattr",sep=""), inputs=c(decay, sender_attr), pkgname = "tc.ergmterms")
 }
 
+InitErgmTerm.gwesp_scc_senderattr <- function(nw, arglist, ...) {
+  # the following line was commented out in <InitErgm.gwesp>:
+  #   ergm.checkdirected("gwesp", is.directed(nw), requirement=FALSE)
+  # so, I've not passed 'directed=FALSE' to <check.ErgmTerm>  
+  a <- check.ErgmTerm(nw, arglist, directed = T,
+                      varnames = c("decay", "type", "sender_attr", "value"),
+                      vartypes = c("numeric", "numeric", "character", "character,numeric,logical"),
+                      defaultvalues = list(0, NULL, NULL, NULL),
+                      required = c(FALSE, TRUE, TRUE, TRUE))
+  
+  sender_attr <- get.node.attr(nw, a$sender_attr)
+  sender_attr <- ifelse(sender_attr == a$value, 1, 0)
+  
+  decay<-a$decay
+  type <- a$type
+  if(type == 1){name <- "gwtesp_diff_senderattr"} else {if(type == 2){name <- "gwtesp_mix_senderattr"} else {name <- "gwtesp_same_senderattr"}}
+  list(name=name, coef.names=paste("gwesp_scc.", type,".fixed.",decay,"_senderattr",sep=""), inputs=c(decay, sender_attr), pkgname = "tc.ergmterms")
+}
+
 InitErgmTerm.difftransties_senderattr <- function (nw, arglist, ...) {
   a <- check.ErgmTerm(nw, arglist, directed=TRUE,
                       varnames = c("attrname", "diff", "levels", "sender_attr", "value"),
