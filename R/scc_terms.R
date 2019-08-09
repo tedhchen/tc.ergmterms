@@ -268,7 +268,9 @@ InitErgmTerm.gwesp_scc_senderattr <- function(nw, arglist, ...) {
   
   decay<-a$decay
   type <- a$type
-  if(type == 1){name <- "gwtesp_diff_senderattr"} else {if(type == 2){name <- "gwtesp_mix_senderattr"} else {name <- "gwtesp_same_senderattr"}}
+  if(type == 1){name <- "gwtesp_diff_senderattr"}
+  if(type == 2){name <- "gwtesp_mix_senderattr"}
+  if(type == 3){name <- "gwtesp_same_senderattr"}
   list(name=name, coef.names=paste("gwesp_scc.", type,".fixed.",decay,"_senderattr",sep=""), inputs=c(decay, sender_attr), pkgname = "tc.ergmterms")
 }
 

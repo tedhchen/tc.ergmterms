@@ -748,7 +748,7 @@ D_CHANGESTAT_FN(d_gwtesp_mix_senderattr) {
 					L2uh=ochange;
 					/* step through outedges of u */
 					STEP_THROUGH_OUTEDGES(u, f, v){
-						if(IS_OUTEDGE(v, head) && (INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1] != tailattr)) L2uh++;
+						if(IS_OUTEDGE(v, head) && (INPUT_PARAM[N_INPUT_PARAMS - N_NODES + v - 1] == tailattr)) L2uh++;
 					}
 					cumchange += pow(oneexpa,(double)L2uh) ;
 				}
